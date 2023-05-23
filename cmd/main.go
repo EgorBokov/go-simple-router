@@ -25,6 +25,7 @@ func main() {
 	router.GET("/albums", getAlbums)
 	router.POST("/albums", postAlbums)
 	router.GET("/albums/:id", getAlbumById)
+	router.DELETE("/albums/:id", deleteAlbumById)
 
 	router.Run("localhost:8080")
 }
@@ -42,6 +43,21 @@ func postAlbums(c *gin.Context) {
 
 	albums = append(albums, newAlbum)
 	c.IndentedJSON(http.StatusCreated, newAlbum)
+}
+
+func deleteAlbumById(c *gin.Context) {
+	id := c.Param("id")
+
+	for idx, value := range albums {
+		if value.ID == id {
+			albums = append(albums[:idx], albums[idx+1:]...)
+
+			c.IndentedJSON(http.StatusOK, albums)
+			return
+		}
+	}
+
+	c.IndentedJSON(http.StatusNotFound, gin.H{"mesage": "There is no such id in table!"})
 }
 
 func getAlbumById(c *gin.Context) {
